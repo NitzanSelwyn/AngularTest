@@ -71,6 +71,13 @@ export class CartComponent implements OnInit {
   };
 
   addresses: any[] = []
+  displayedColumns: string[] = ['label', 'value'];
+  summaryData = [
+    { label: 'Subtotal', value: this.cart.subtotal },
+    { label: 'Shipping', value: this.cart.shipping },
+    { label: 'Tax', value: this.cart.tax },
+    { label: 'Discount', value: this.cart.discount }
+  ];
 
   constructor(private addressService: AddressService) { }
 
@@ -79,15 +86,6 @@ export class CartComponent implements OnInit {
       this.addresses = addresses
     });
   }
-
-  displayedColumns: string[] = ['label', 'value'];
-
-  summaryData = [
-    { label: 'Subtotal', value: this.cart.subtotal },
-    { label: 'Shipping', value: this.cart.shipping },
-    { label: 'Tax', value: this.cart.tax },
-    { label: 'Discount', value: this.cart.discount }
-  ];
 
   changeAddress = (address: Address) => {
     this.cart.shippingAddress = address
