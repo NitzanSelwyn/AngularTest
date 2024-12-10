@@ -1,0 +1,22 @@
+/* Form container with proper padding and spacing */
+.form-container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Adds vertical spacing between fields */
+  }
+  
+  /* Material form fields with sufficient height */
+  mat-form-field {
+    width: 100%; /* Full width fields */
+    min-height: 80px; /* Ensures label animation doesn't get cut off */
+    overflow: visible; /* Prevents clipping of the floating label */
+  }
+  
+  /* Align buttons with spacing */
+  .button-container {
+    margin-top: 16px;
+    display: flex;
+    gap: 16px; /* Adds spacing between buttons */
+  }
+  
