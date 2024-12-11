@@ -3,11 +3,9 @@
         Add Address
     </button>
     <mat-list>
-        <mat-list-item *ngFor="let address of addresses; let i = index"
-            [ngStyle]="{ 'border': address.id === selectedAddress.id ? '2px solid green' : '1px solid black',
+        <mat-list-item *ngFor="let address of addresses; let i = index" [ngStyle]="{ 'border': address.id === selectedAddress.id ? '2px solid green' : '2px solid black',
             'margin-bottom': '8px' ,
-            'cursor': 'pointer'
-        }" (click)="selectAddress(address)">
+            'cursor': 'pointer'}" (click)="selectAddress(address)">
             <div style="display: flex;">
                 <p>
                     {{ address.addressLine1 }}, {{ address.city }}, {{ address.state }}
@@ -42,7 +40,11 @@
 
             <mat-form-field appearance="fill">
                 <mat-label>State</mat-label>
-                <input matInput formControlName="state" />
+                <mat-select formControlName="state">
+                    <mat-option *ngFor="let state of statesList" [value]="state">
+                        {{ state }}
+                    </mat-option>
+                </mat-select>
                 <mat-error *ngIf="addressForm.get('state')?.invalid">State is required</mat-error>
             </mat-form-field>
 
@@ -54,12 +56,16 @@
 
             <mat-form-field appearance="fill">
                 <mat-label>Country</mat-label>
-                <input matInput formControlName="country" />
+                <mat-select formControlName="country" (selectionChange)="onCountryChange($event.value)">
+                    <mat-option *ngFor="let country of countriesList" [value]="country">
+                        {{ country }}
+                    </mat-option>
+                </mat-select>
                 <mat-error *ngIf="addressForm.get('country')?.invalid">Country is required</mat-error>
             </mat-form-field>
 
             <div class="button-container">
-                <button mat-raised-button color="primary" type="submit">
+                <button mat-raised-button color="primary" type="submit" [disabled]="addressForm.invalid">
                     {{ isEditMode ? 'Update' : 'Add' }} Address
                 </button>
                 <button mat-raised-button type="button" (click)="resetForm()">Cancel</button>

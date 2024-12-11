@@ -18,6 +18,8 @@ import { AuthInterceptor } from './healpers/auth.interceptor';
 import { CartComponent } from './cart/cart.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTableModule } from '@angular/material/table';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,13 @@ import { MatTableModule } from '@angular/material/table';
     MatListModule,
     MatIconModule,
     MatDividerModule,
-    MatTableModule
+    MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+
+
   ],
   providers: [
     {

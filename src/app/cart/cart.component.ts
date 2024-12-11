@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Address, AddressService } from '../services/address.service';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css']
 })
-export class CartComponent implements OnInit {
+export class CartComponent implements OnInit, OnDestroy {
 
   cart = {
     id: "94573bc74fda432093c98726131a41e0",
@@ -79,12 +80,18 @@ export class CartComponent implements OnInit {
     { label: 'Discount', value: this.cart.discount }
   ];
 
+  obsv: Subscription = new Subscription();
+
   constructor(private addressService: AddressService) { }
 
   ngOnInit(): void {
-    this.addressService.getAddresses().subscribe(addresses => {
+    this.obsv = this.addressService.getAddresses().subscribe(addresses => {
       this.addresses = addresses
     });
+  }
+
+  ngOnDestroy(): void {
+    this.obsv.unsubscribe();
   }
 
   changeAddress = (address: Address) => {

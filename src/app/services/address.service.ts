@@ -18,15 +18,23 @@ export interface Address {
 })
 export class AddressService {
 
-  private apiUrl = 'https://du-mock-checkout-7d42d0a76fbf.herokuapp.com/';
+  private apiUrl = 'https://du-mock-checkout-7d42d0a76fbf.herokuapp.com/api/Address';
 
   constructor(private http: HttpClient) { }
 
   getAddresses(): Observable<Address[]> {
-    return this.http.get<Address[]>(this.apiUrl + 'api/address');
+    return this.http.get<Address[]>(this.apiUrl);
   }
 
   addNewAddress(address: Address): Observable<Address> {
-    return this.http.post<Address>(this.apiUrl + 'api/address', address);
+    return this.http.post<Address>(this.apiUrl, address);
+  }
+
+  getCountriesList(): Observable<string[]> {
+    return this.http.get<string[]>(this.apiUrl + '/countries');
+  }
+
+  getStateList(countrie: string): Observable<string[]> {
+    return this.http.get<string[]>(this.apiUrl + '/states/' + countrie);
   }
 }

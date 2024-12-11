@@ -1,18 +1,23 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Address, AddressService } from '../services/address.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-address',
   templateUrl: './address.component.html',
   styleUrls: ['./address.component.css'],
 })
-export class AddressComponent implements OnInit {
+export class AddressComponent implements OnInit, OnDestroy {
 
   addressForm!: FormGroup;
   isEditMode = false;
   editIndex: number | null = null;
   openChange: boolean = false;
+  countriesList: string[] = [];
+  statesList: string[] = [];
+  subAdd: Subscription = new Subscription();
+  subCountriesLst: Subscription = new Subscription();
 
   @Input() selectedAddress: Address = {
     addressLine1: "", addressLine2: "", city: "", country: "", id: "", saved: true,
@@ -21,33 +26,52 @@ export class AddressComponent implements OnInit {
   @Input() addresses: Address[] = [];
   @Output() selectDiffrentAddress = new EventEmitter<Address>();
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder, private addressService: AddressService) { }
 
   ngOnInit(): void {
     this.initForm();
-    console.log(this.selectedAddress)
+    this.getCountriesList();
+  }
+
+  ngOnDestroy(): void {
+    this.subAdd.unsubscribe();
+    this.subCountriesLst.unsubscribe();
   }
 
   initForm(): void {
     this.addressForm = this.fb.group({
-      id: [],
+      id: [''],
       addressLine1: ['', [Validators.required]],
       addressLine2: [''],
       city: ['', [Validators.required]],
-      state: ['', []],
+      state: [{ value: '', disabled: true }],
       zipCode: ['', [Validators.required, Validators.pattern('^[0-9]{5}$')]],
       country: ['', [Validators.required]],
       saved: [true],
     });
   }
 
-  newAddress = () => {
+  newAddress = (): void => {
     this.isEditMode = false;
     this.resetForm();
     this.openChange = true;
   }
 
-  selectAddress = (address: any) => {
+  onCountryChange(selectedCountry: string): void {
+    const stateControl = this.addressForm.get('state');
+    if (selectedCountry === 'Canada' || selectedCountry === 'USA') {
+      stateControl?.enable();
+      this.addressService.getStateList(selectedCountry).subscribe((states) => {
+        this.statesList = states;
+      });
+    } else {
+      stateControl?.disable();
+      this.statesList = [];
+      stateControl?.reset();
+    }
+  }
+
+  selectAddress = (address: Address): void => {
     this.selectDiffrentAddress.emit(address)
   }
 
@@ -61,10 +85,24 @@ export class AddressComponent implements OnInit {
       } else {
         this.addresses.push(formData);
       }
-      this.openChange = false;
-      this.selectAddress(formData)
-      this.resetForm();
+
+      this.subAdd = this.addressService.addNewAddress(formData).subscribe(address => {
+        this.openChange = false;
+        this.selectAddress(address);
+        this.resetForm();
+      }, (error) => {
+        console.log(error)
+      });
+
     }
+  }
+
+  getCountriesList(): void {
+    this.subCountriesLst = this.addressService.getCountriesList().subscribe(countries => {
+      this.countriesList = countries
+    }, error => {
+
+    })
   }
 
   onEdit(index: number): void {
@@ -97,5 +135,6 @@ export class AddressComponent implements OnInit {
       country: '',
       saved: true,
     });
+    this.addressForm.get('state')?.disable();
   }
 }
